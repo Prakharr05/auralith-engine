@@ -1,0 +1,19 @@
+{
+  "indie_explorer": [
+    {"name": "Phoebe Bridgers", "genres": ["indie folk", "indie pop", "bedroom pop"], "popularity": 71, "release_year": 2020, "weight": 5},
+    {"name": "Big Thief", "genres": ["indie folk", "indie rock"], "popularity": 58, "release_year": 2022, "weight": 4},
+    {"name": "Alex G", "genres": ["indie rock", "bedroom pop", "lo-fi"], "popularity": 62, "release_year": 2019, "weight": 4},
+    {"name": "Adrianne Lenker", "genres": ["indie folk", "singer-songwriter"], "popularity": 49, "release_year": 2020, "weight": 3},
+    {"name": "Black Country, New Road", "genres": ["post-rock", "art rock", "experimental"], "popularity": 45, "release_year": 2022, "weight": 3},
+    {"name": "Weyes Blood", "genres": ["chamber pop", "art pop"], "popularity": 52, "release_year": 2019, "weight": 2},
+    {"name": "Slowdive", "genres": ["shoegaze", "dream pop"], "popularity": 56, "release_year": 1993, "weight": 2},
+    {"name": "Duster", "genres": ["slowcore", "lo-fi", "indie rock"], "popularity": 48, "release_year": 1998, "weight": 2}
+  ],
+  "mainstream_pop_loyalist": [
+    {"name": "Taylor Swift", "genres": ["pop"], "popularity": 100, "release_year": 2022, "weight": 8},
+    {"name": "Ariana Grande", "genres": ["pop", "dance pop"], "popularity": 92, "release_year": 2024, "weight": 6},
+    {"name": "Dua Lipa", "genres": ["pop", "dance pop"], "popularity": 90, "release_year": 2024, "weight": 5},
+    {"name": "The Weeknd", "genres": ["pop", "r&b"], "popularity": 96, "release_year": 2023, "weight": 4},
+    {"name": "Olivia Rodrigo", "genres": ["pop"], "popularity": 89, "release_year": 2023, "weight": 3}
+  ]
+}

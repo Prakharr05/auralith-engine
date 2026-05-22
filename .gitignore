@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Virtual environment
+venv/
+.venv/
+
+# Secrets — never commit your API key
+.env
+
+# Local scratch / debugging
+diag.py
+
+# Editor / OS noise
+.vscode/
+.idea/
+.DS_Store
