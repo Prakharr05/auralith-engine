@@ -26,6 +26,7 @@ except ImportError:
     pass
 
 from typing import Any, Optional
+import os
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,11 +38,14 @@ from service.narrator import narrate
 
 app = FastAPI(title="Music Taste Personality Engine", version="0.2.0")
 
-# CORS so the Next.js frontend (different origin) can call us. Lock the origin
-# down in production via env; '*' is for local dev only.
+# CORS so the Next.js frontend (different origin) can call us. In production set
+# ALLOWED_ORIGINS to your Vercel URL (comma-separated for multiple); defaults to
+# "*" for local dev convenience.
+_origins = os.getenv("ALLOWED_ORIGINS", "*")
+allow_origins = ["*"] if _origins.strip() == "*" else [o.strip() for o in _origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allow_origins,
     allow_methods=["POST", "GET"],
     allow_headers=["*"],
 )

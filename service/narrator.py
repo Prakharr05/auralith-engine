@@ -24,15 +24,16 @@ from engine import TasteProfile
 # Prompt construction
 # ---------------------------------------------------------------------------
 
-SYSTEM_PROMPT = """You are a witty, perceptive music-taste analyst. You write \
-short, punchy personality readings based ONLY on the numeric profile you are \
-given. You never invent specific songs, artists, or facts that are not present \
-in the data. You are playful and a little roasty, but never mean about \
-protected characteristics. Tease the listener's habits and quirks, never their \
-worth — taste is close to identity, so roast the behavior ('you'll call music \
-textural'), not the person ('your taste is embarrassing'). The reading should \
-be something the listener would happily screenshot and share. Output ONLY valid \
-JSON matching the requested schema, with no markdown fences or preamble."""
+SYSTEM_PROMPT = """You are a witty, ruthless, very funny music-taste analyst. You \
+write personality readings based ONLY on the numeric profile you are given. You \
+never invent specific songs, artists, or facts not present in the data. Your \
+default voice is playful and a little roasty; the dating_verdict specifically \
+should be MEANER and quirkier — affectionately savage, the way a close friend \
+roasts you. Tease habits and quirks, never a person's worth or identity — roast \
+the behavior ('you'll call music textural'), not the human ('your taste is \
+embarrassing'). Be specific and surprising over generic. Everything should be \
+something the listener would gleefully screenshot. Output ONLY valid JSON \
+matching the requested schema, with no markdown fences or preamble."""
 
 # What the model is allowed to know. Note what is ABSENT: no track names, no
 # artist names beyond the genre labels, nothing it could spin a fake story from.
@@ -42,7 +43,7 @@ SCHEMA_INSTRUCTION = """Return a JSON object with exactly these keys:
   "summary": "2-3 sentence personality read grounded in the numbers",
   "green_flags": ["3 short positive observations"],
   "red_flags": ["2-3 short playful warnings"],
-  "dating_verdict": "1-2 sentences on what dating this listener is like"
+  "dating_verdict": "4-6 sentences on what dating this listener is REALLY like. Be meaner and quirkier here than in the rest — affectionately savage, specific, and funny. Roast the dating-relevant habits their taste implies (how they'd act on a first date, in the car, at a party, when sad). Land at least one genuinely cutting-but-true observation and one absurd hyper-specific image. Still never cruel about identity — roast the behavior, not their worth. Make it the kind of thing they'd screenshot and send to the person they're dating."
 }"""
 
 
@@ -160,8 +161,11 @@ def _fallback_narrator(profile: TasteProfile) -> dict[str, Any]:
             f"{'Could be a music snob' if profile.mainstream_score < 0.3 else 'Will defend a guilty pleasure to the death'}.",
         ],
         "dating_verdict": (
-            f"Dating a {type_word} means {'a constant stream of song recommendations' if profile.explorer_score > 0.6 else 'a comfortable, predictable soundtrack'}. "
-            f"{'Bring an open mind.' if profile.eclectic_score > 0.6 else 'Bring patience for repeats.'}"
+            f"Dating a {type_word} is an experience. "
+            f"{'They will hijack the aux within ninety seconds of getting in the car and narrate every track like a documentary nobody asked for. ' if profile.explorer_score > 0.6 else 'They have roughly five songs and will play all five on a loop until you can hear them in your sleep. '}"
+            f"{'Expect to be sent a seven-minute song at 1am with the message just listen to the bridge. ' if profile.eclectic_score > 0.6 else 'Suggesting a new artist will be treated as a minor personal attack. '}"
+            f"{'They will judge your playlists silently and you will feel it. ' if profile.mainstream_score < 0.3 else 'They know every word to songs they would never admit to liking. '}"
+            f"Genuinely lovely, mildly insufferable, worth it."
         ),
         "_fallback": True,
     }

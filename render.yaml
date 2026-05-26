@@ -1,0 +1,19 @@
+# Render Blueprint — deploys the FastAPI engine as a web service.
+# On Render: New → Blueprint → connect this repo, and it reads this file.
+services:
+  - type: web
+    name: auralith-engine
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    # Render provides $PORT; uvicorn must bind to it and to 0.0.0.0
+    startCommand: "uvicorn service.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: LLM_PROVIDER
+        value: anthropic
+      - key: ANTHROPIC_API_KEY
+        sync: false          # set this secret in the Render dashboard
+      - key: LLM_MODEL
+        value: claude-sonnet-4-6
+      - key: ALLOWED_ORIGINS
+        sync: false          # set to your Vercel URL after the frontend deploys
