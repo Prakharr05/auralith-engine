@@ -56,14 +56,20 @@ def test_collect_artist_ids_dedupes_in_order():
 
 # ---- narrator contract ---------------------------------------------------
 
-def test_narrator_prompt_excludes_artist_names():
-    # The integrity rule: artist names must NOT reach the model. The prompt is
-    # built only from the computed profile, which carries genres, not artists.
+def test_narrator_prompt_includes_artist_names_when_provided():
+    # Spotify now often returns empty genres, so we ground the read in artist
+    # names. The prompt must include them when passed (still no fabricated facts).
     from engine import ArtistEntry
-    entries = [ArtistEntry("SecretBandName", ["vaporwave"], 30, 2015)]
-    prompt = build_user_prompt(analyze(entries))
-    assert "SecretBandName" not in prompt
-    assert "vaporwave" in prompt  # genre labels are fair game
+    entries = [ArtistEntry("Pritam", [], 60, 2015), ArtistEntry("Vishal-Shekhar", [], 55, 2014)]
+    prompt = build_user_prompt(analyze(entries), top_artists=["Pritam", "Vishal-Shekhar"])
+    assert "Pritam" in prompt
+    assert "Vishal-Shekhar" in prompt
+
+def test_narrator_prompt_omits_artist_line_when_none():
+    # When no names are passed, no TOP ARTISTS line appears.
+    from engine import ArtistEntry
+    prompt = build_user_prompt(analyze([ArtistEntry("X", ["pop"], 50, 2020)]))
+    assert "TOP ARTISTS" not in prompt
 
 
 def test_fallback_narrator_returns_full_schema():

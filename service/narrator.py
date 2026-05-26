@@ -62,10 +62,16 @@ def _describe_axis(name: str, value: float, low: str, high: str) -> str:
     return f"{name}: {value:.2f} ({band})"
 
 
-def build_user_prompt(profile: TasteProfile) -> str:
+def build_user_prompt(profile: TasteProfile, top_artists: list[str] | None = None) -> str:
     """
-    Render the computed profile into the text the model receives. This is the
-    ONLY information about the listener that crosses into the LLM.
+    Render the computed profile into the text the model receives.
+
+    When Spotify supplies genres, those carry the analysis. But Spotify now
+    often returns EMPTY genres, which made every read collapse to the same
+    generic output. To keep reads personal, we also pass the top artist NAMES
+    so the model can ground the read in who the person actually listens to.
+    The model still must not invent songs/facts — names are real signal, not
+    fabrication fuel.
     """
     axes = [
         _describe_axis("mainstream", profile.mainstream_score, "obscure", "mainstream"),
@@ -73,11 +79,17 @@ def build_user_prompt(profile: TasteProfile) -> str:
         _describe_axis("eclectic", profile.eclectic_score, "focused", "eclectic"),
         _describe_axis("explorer", profile.explorer_score, "loyal to favorites", "always exploring"),
     ]
-    genres = ", ".join(f"{g} ({w:.0%})" for g, w in profile.top_genres)
+    genres = ", ".join(f"{g} ({w:.0%})" for g, w in profile.top_genres) or "(none returned by Spotify)"
+    artists_line = ""
+    if top_artists:
+        artists_line = f"TOP ARTISTS (most-listened first): {', '.join(top_artists[:20])}\n"
 
     return (
-        "Here is the computed taste profile. Base your reading ONLY on this:\n\n"
+        "Here is the listener's profile. Base your reading on this — you may use "
+        "the artist names to ground the read, but do NOT invent songs, lyrics, or "
+        "facts you are not given:\n\n"
         f"AXES (each 0.0-1.0):\n  " + "\n  ".join(axes) + "\n\n"
+        f"{artists_line}"
         f"TOP GENRES (by weight): {genres}\n"
         f"distinct genres: {profile.distinct_genres}\n"
         f"distinct artists: {profile.distinct_artists}\n"
@@ -175,14 +187,14 @@ def _fallback_narrator(profile: TasteProfile) -> dict[str, Any]:
 # Public entry point
 # ---------------------------------------------------------------------------
 
-def narrate(profile: TasteProfile) -> dict[str, Any]:
+def narrate(profile: TasteProfile, top_artists: list[str] | None = None) -> dict[str, Any]:
     """
     Produce the roast. Routes to the configured LLM provider, falling back to
     the deterministic narrator if no key is set or the call/parse fails.
     """
     provider = os.getenv("LLM_PROVIDER", "").lower()
     debug = os.getenv("NARRATOR_DEBUG", "").lower() in ("1", "true", "yes")
-    user_prompt = build_user_prompt(profile)
+    user_prompt = build_user_prompt(profile, top_artists)
 
     caller = None
     if provider == "anthropic" and os.getenv("ANTHROPIC_API_KEY"):

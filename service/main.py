@@ -89,7 +89,11 @@ def _profile_and_roast(entries: list[ArtistEntry]) -> dict[str, Any]:
     if not entries:
         raise HTTPException(status_code=422, detail="No artists with usable data.")
     profile = analyze(entries)
-    return {"profile": profile.as_dict(), "narration": narrate(profile)}
+    # Pass artist names (heaviest-weighted first) so the narrator can ground the
+    # read in who the person actually listens to — essential now that Spotify
+    # frequently returns empty genres.
+    top_artists = [e.name for e in sorted(entries, key=lambda e: e.weight, reverse=True)]
+    return {"profile": profile.as_dict(), "narration": narrate(profile, top_artists)}
 
 
 # ---- endpoints ------------------------------------------------------------
